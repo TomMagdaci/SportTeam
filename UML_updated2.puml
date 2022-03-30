@@ -1,0 +1,238 @@
+@startuml
+interface IGame {
+~ String getHomeTeam()
+~ String getAwayTeam()
+~ String getGameDate()
+~ String getScore()
+~ String getLocation()
+~ String getGameName()
+}
+class DBTeamData {
++ List<Map<IPlayer,Integer>> getPlayersGoals()
++ List<Map<IPlayer,Integer>> getPlayersAssists()
++ List<String> getHistory()
++ List<Map<IPlayer,Integer>> getAppearances()
++ List<IPlayer> getPlayers()
+}
+class Team {
+- List<ICoach> coach
+- List<IPlayer> players
+- ITeamSchedule schedule
+- String teamName
+- String sport
++ ITeam addCoach(ICoach)
++ ITeam addPlayer(IPlayer)
++ void addGame(IGame)
++ String getName()
++ String getSport()
++ List<ICoach> getCoaches()
++ List<IPlayer> getPlayers()
++ ITeamSchedule getTeamSchedule()
++ void setTeamSchedule(ITeamSchedule)
++ Iterator<ITeamMember> iterator()
++ void apply(IVisitorDrawer)
+}
+class Team.TeamIterator {
+~ int pos_players
++ boolean hasNext()
++ ITeamMember next()
+}
+interface IPlayer {
+~ String getPosition()
+~ void setPosition(String)
+}
+interface IDBobserver {
+~ void addPlayerToTeam(String)
+~ void addCoachToTeam(String)
+~ void addGame(String)
+}
+class Player {
+~ String position
+~ String name
+~ int salary
+~ String sport
++ String getPosition()
++ void setPosition(String)
++ void setName(String)
++ void setSport(String)
++ void setSalary(int)
++ String getSport()
++ int getSalary()
++ String getName()
++ void apply(IVisitorDrawer)
+}
+class EvaluateByGoals {
++ List<Map<IPlayer,Integer>> EvaluationAlgorithm(IDBTeamData)
+}
+class RamDB {
+- List<IPlayer> lPlayers
+- List<ICoach> lCoaches
+- List<IGame> lGame
++ void printPlayers()
+# void writePlayerToFile(IPlayer)
+# void writeCoachToFile(ICoach)
+# void writeGameToFile(IGame)
+}
+class SQLDB {
+- Connection c
+# void writePlayerToFile(IPlayer)
+# void writeCoachToFile(ICoach)
+# void writeGameToFile(IGame)
+}
+interface ICoach {
+~ String getRole()
+~ void setRole(String)
+}
+class PrintScreenGUI {
++ void draw(IPlayer)
++ void draw(ICoach)
+}
+abstract class DBobserverAbstract {
+# ITeam t
++ void addPlayerToTeam(String)
++ void addCoachToTeam(String)
++ void addGame(String)
+# {abstract}void writePlayerToFile(IPlayer)
+# {abstract}void writeCoachToFile(ICoach)
+# {abstract}void writeGameToFile(IGame)
++ void update(String,String)
+}
+interface ITeamMember {
+~ void setName(String)
+~ void setSport(String)
+~ void setSalary(int)
+~ String getSport()
+~ int getSalary()
+~ String getName()
+~ void apply(IVisitorDrawer)
+}
+interface IObservable {
+~ void addObserver(IObserver)
+~ void removeObserver(IObserver)
+~ void notifyObservers(String,String)
+}
+abstract class VisitorDrawer {
++ void draw(ITeam)
+}
+interface IObserver {
+~ void update(String,String)
+}
+class EvaluateByPlayers {
++ List<Map<IPlayer,Integer>> EvaluationAlgorithm(IDBTeamData)
+}
+abstract class TeamEvaluator {
+- IDBTeamData data
++ {abstract}List<Map<IPlayer,Integer>> EvaluationAlgorithm(IDBTeamData)
+}
+abstract class Observable {
+- List<IObserver> observers
++ void addObserver(IObserver)
++ void removeObserver(IObserver)
++ void notifyObservers(String,String)
+}
+class TeamSchedule {
+~ List<IGame> games
++ List<IGame> getGames()
++ List<String> getGameLocations()
++ void addGame(IGame)
+}
+class main {
++ {static} void main(String[])
+}
+class Coach {
+~ String role
+~ String name
+~ int salary
+~ String sport
++ String getRole()
++ void setRole(String)
++ void setName(String)
++ void setSport(String)
++ void setSalary(int)
++ String getSport()
++ int getSalary()
++ String getName()
++ void apply(IVisitorDrawer)
+}
+interface ITeam {
+~ void addGame(IGame)
+~ String getName()
+~ String getSport()
+~ List<ICoach> getCoaches()
+~ List<IPlayer> getPlayers()
+~ ITeamSchedule getTeamSchedule()
+~ void setTeamSchedule(ITeamSchedule)
+~ void apply(IVisitorDrawer)
+~ ITeam addPlayer(IPlayer)
+~ ITeam addCoach(ICoach)
+}
+class Game {
+- String gameName
+- ITeam homeTeam
+- String location
+- String date
+- String score
++ String getHomeTeam()
++ String getAwayTeam()
++ String getGameDate()
++ String getScore()
++ String getLocation()
++ String getGameName()
+}
+interface IVisitorDrawer {
+~ void draw(ITeam)
+~ void draw(IPlayer)
+~ void draw(ICoach)
+}
+interface ITeamSchedule {
+~ List<IGame> getGames()
+~ List<String> getGameLocations()
++ void addGame(IGame)
+}
+interface IDBTeamData {
+~ List<Map<IPlayer,Integer>> getPlayersGoals()
+~ List<Map<IPlayer,Integer>> getPlayersAssists()
+~ List<String> getHistory()
+~ List<Map<IPlayer,Integer>> getAppearances()
+~ List<IPlayer> getPlayers()
+}
+class FileDB {
+~ File f
+# void writePlayerToFile(IPlayer)
+# void writeCoachToFile(ICoach)
+# void writeGameToFile(IGame)
+}
+
+
+IDBTeamData <|.. DBTeamData
+Observable <|-- Team
+Team +.. Team.TeamIterator
+Iterator <|.. Team.TeamIterator
+ITeamMember <|-- IPlayer
+IObserver <|-- IDBobserver
+IPlayer <|.. Player
+TeamEvaluator <|-- EvaluateByGoals
+DBobserverAbstract <|-- RamDB
+DBobserverAbstract <|-- SQLDB
+ITeamMember <|-- ICoach
+VisitorDrawer <|-- PrintScreenGUI
+IDBobserver <|.. DBobserverAbstract
+IVisitorDrawer <|.. VisitorDrawer
+TeamEvaluator <|-- EvaluateByPlayers
+ITeam <|.. Observable
+ITeamSchedule <|.. TeamSchedule
+ICoach <|.. Coach
+Iterable <|-- ITeam
+IObservable <|-- ITeam
+IGame <|.. Game
+DBobserverAbstract <|-- FileDB
+Team "1..n" *-- IPlayer
+Team "1..n" *-- ICoach
+Team o-- ITeamSchedule
+Observable o-- IObserver
+TeamSchedule "1..n" *-- IGame
+TeamEvaluator o-- IDBTeamData
+ITeam -- IVisitorDrawer
+ICoach -- IVisitorDrawer
+IPlayer -- IVisitorDrawer
+@enduml
